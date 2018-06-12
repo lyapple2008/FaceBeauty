@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceBeauty", "FaceBeauty\FaceBeauty.vcxproj", "{90657D83-4C23-41E2-B84F-C8711A9F3B91}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SkinDetect", "SkinDetect\SkinDetect.vcxproj", "{E49AF00D-77DE-4997-B359-AEF7710CB40E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Debug|x64.ActiveCfg = Debug|x64
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Debug|x64.Build.0 = Debug|x64
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Debug|x86.ActiveCfg = Debug|Win32
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Debug|x86.Build.0 = Debug|Win32
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Release|x64.ActiveCfg = Release|x64
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Release|x64.Build.0 = Release|x64
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Release|x86.ActiveCfg = Release|Win32
+		{90657D83-4C23-41E2-B84F-C8711A9F3B91}.Release|x86.Build.0 = Release|Win32
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Debug|x64.ActiveCfg = Debug|x64
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Debug|x64.Build.0 = Debug|x64
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Debug|x86.ActiveCfg = Debug|Win32
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Debug|x86.Build.0 = Debug|Win32
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Release|x64.ActiveCfg = Release|x64
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Release|x64.Build.0 = Release|x64
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Release|x86.ActiveCfg = Release|Win32
+		{E49AF00D-77DE-4997-B359-AEF7710CB40E}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

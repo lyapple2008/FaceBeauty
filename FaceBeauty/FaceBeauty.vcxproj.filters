@@ -15,8 +15,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test_pic_mode.cpp">
+    <ClCompile Include="skinSegment.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="skinWhiten.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="EdgePreservingFilter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test_camera_mode.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="skinSegment.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="skinWhiten.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="EdgePreservingFilter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

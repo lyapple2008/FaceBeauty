@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-	std::string picPath = "../TestSets/img_490.jpg";
+	std::string picPath = "../TestSets/face_004.jpg";
 	cv::Mat inFrame = cv::imread(picPath);
 
 	if (inFrame.empty()) {

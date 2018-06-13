@@ -103,8 +103,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,7 +150,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="test_pic_mode.cpp" />
+    <ClCompile Include="EdgePreservingFilter.cpp" />
+    <ClCompile Include="skinSegment.cpp" />
+    <ClCompile Include="skinWhiten.cpp" />
+    <ClCompile Include="test_camera_mode.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EdgePreservingFilter.h" />
+    <ClInclude Include="skinSegment.h" />
+    <ClInclude Include="skinWhiten.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -153,7 +153,7 @@
     <ClCompile Include="EdgePreservingFilter.cpp" />
     <ClCompile Include="skinSegment.cpp" />
     <ClCompile Include="skinWhiten.cpp" />
-    <ClCompile Include="test_camera_mode.cpp" />
+    <ClCompile Include="test_pic_mode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EdgePreservingFilter.h" />

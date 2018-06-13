@@ -17,11 +17,12 @@ public:
 typedef std::function<bool(uint8_t)> checkPixelFunc;
 
 void mergeFrameMask(cv::Mat& outFrame, cv::Mat& inFrame, cv::Mat& maskFrame, checkPixelFunc func);
+void frameEnhance(cv::Mat& outFrame, cv::Mat& inFrame, float coef);
 
 int main(int argc, char* argv[])
 {
 	Timer timer;
-	std::string picPath = "../TestSets/face_008.jpg";
+	std::string picPath = "../TestSets/face_003.jpg";
 	cv::Mat inFrame = cv::imread(picPath);
 	if (inFrame.empty()) {
 		std::cout << "Fail to open " << picPath << std::endl;
@@ -32,23 +33,30 @@ int main(int argc, char* argv[])
 	timer.start();
 
 	cv::Mat outFrame;
-	int d = 7;
-	filter_by_bilaterFiler_opencv(inFrame, outFrame, d, d * 2, d * 2);
+	//int d = 7;
+	//filter_by_bilaterFiler_opencv(inFrame, outFrame, d, d * 2, d * 2);
 	//float sigma_spatial = 0.01f;
 	//float sigma_range = 0.09f;
 	//filter_by_rbf(inFrame, outFrame, sigma_spatial, sigma_range);
-	
-	cv::Mat skinMask;
-	skinSegment_hsv(inFrame, skinMask);
-	cv::imshow("skinMask", skinMask);
+	float lambda = 0.63;
+	int K = 10;
+	int niters = 2;
+	filter_by_AnisotropicFilter(inFrame, outFrame, lambda, K, niters);
+
+	//cv::Mat skinMask;
+	//skinSegment_hsv(inFrame, skinMask);
+	//cv::imshow("skinMask", skinMask);
 
 	float level = 0.5;
 	skinWhiten_brightness(outFrame, level);
 
-	cv::Mat mergeFrame = outFrame.clone();
-	std::function<bool(uint8_t)> func1 = [](uint8_t x) {return x == 255; };
-	mergeFrameMask(mergeFrame, inFrame, skinMask, func1);
-	cv::imshow("mergeFrame", mergeFrame);
+	//cv::Mat mergeFrame = outFrame.clone();
+	//std::function<bool(uint8_t)> func1 = [](uint8_t x) {return x == 255; };
+	//mergeFrameMask(mergeFrame, inFrame, skinMask, func1);
+	//cv::imshow("mergeFrame", mergeFrame);
+
+	//float coef = 0.3;
+	//frameEnhance(outFrame, inFrame, coef);
 
 	float consumeTime = timer.elapsedTime();
 	float fps = 1.0 / consumeTime;
@@ -93,4 +101,56 @@ void mergeFrameMask(cv::Mat& outFrame, cv::Mat& inFrame, cv::Mat& maskFrame, che
 			outData += 3;
 		}
 	}
+}
+
+void frameEnhance(cv::Mat& outFrame, cv::Mat& inFrame, float coef)
+{
+	int nr = inFrame.rows;
+	int nc = inFrame.cols;
+	int nChannels = inFrame.channels();
+
+	if (nr != outFrame.rows ||
+		nc != outFrame.cols ||
+		nChannels != outFrame.channels() ||
+		nChannels != 3) {
+		return;
+	}
+
+	for (int i = 0; i < nr; i++) {
+		uint8_t *inData = inFrame.ptr<uint8_t>(i);
+		uint8_t *outData = outFrame.ptr<uint8_t>(i);
+		for (int j = 0; j < nc; j++) {
+			int r = (inData[0] - outData[0]) * coef + outData[0];
+			int g = (inData[1] - outData[1]) * coef + outData[1];
+			int b = (inData[2] - outData[2]) * coef + outData[2];
+			if (r < 0) {
+				r = 0;
+			}
+			else if (r > 255) {
+				r = 255;
+			}
+
+			if (g < 0) {
+				g = 0;
+			}
+			else if (g > 255) {
+				g = 255;
+			}
+
+			if (b < 0) {
+				b = 0;
+			}
+			else if (b > 255) {
+				b = 255;
+			}
+
+			outData[0] = r;
+			outData[1] = g;
+			outData[2] = b;
+
+			inData += 3;
+			outData += 3;
+		}
+	}
+
 }

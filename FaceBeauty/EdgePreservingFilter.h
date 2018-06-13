@@ -9,4 +9,7 @@ void filter_by_rbf(cv::Mat& inFrame, cv::Mat& outFrame,
 void filter_by_bilaterFiler_opencv(cv::Mat& inFrame, cv::Mat& outFrame,
 							int d, double sigma_color, double sigma_space);
 
+void filter_by_AnisotropicFilter(cv::Mat& inFrame, cv::Mat& outFrame,
+							float lambda, float k, int niters);
+
 #endif

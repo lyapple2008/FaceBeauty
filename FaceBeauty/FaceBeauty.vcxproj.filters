@@ -24,7 +24,7 @@
     <ClCompile Include="EdgePreservingFilter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="test_camera_mode.cpp">
+    <ClCompile Include="test_pic_mode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

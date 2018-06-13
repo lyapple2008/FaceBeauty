@@ -18,6 +18,8 @@ typedef std::function<bool(uint8_t)> checkPixelFunc;
 
 void mergeFrameMask(cv::Mat& outFrame, cv::Mat& inFrame, cv::Mat& maskFrame, checkPixelFunc func);
 
+void frameEnhance(cv::Mat& outFrame, cv::Mat& inFrame, float coef);
+
 int main(int argc, char* argv[])
 {
 	cv::VideoCapture inVideo(0);
@@ -61,6 +63,9 @@ int main(int argc, char* argv[])
 		//std::function<bool(uint8_t)> func1 = [](uint8_t x) {return x == 255; };
 		//mergeFrameMask(mergeFrame, inFrame, skinMask, func1);
 		//cv::imshow("mergeFrame", mergeFrame);
+
+		//float coef = 0.3;
+		//frameEnhance(outFrame, inFrame, coef);
 
 		float consumeTime = timer.elapsedTime();
 		float fps = 1.0 / consumeTime;
@@ -107,3 +112,54 @@ void mergeFrameMask(cv::Mat& outFrame, cv::Mat& inFrame, cv::Mat& maskFrame, che
 	}
 }
 
+void frameEnhance(cv::Mat& outFrame, cv::Mat& inFrame, float coef)
+{
+	int nr = inFrame.rows;
+	int nc = inFrame.cols;
+	int nChannels = inFrame.channels();
+
+	if (nr != outFrame.rows ||
+		nc != outFrame.cols ||
+		nChannels != outFrame.channels() ||
+		nChannels != 3) {
+		return;
+	}
+
+	for (int i = 0; i < nr; i++) {
+		uint8_t *inData = inFrame.ptr<uint8_t>(i);
+		uint8_t *outData = outFrame.ptr<uint8_t>(i);
+		for (int j = 0; j < nc; j++) {
+			int r = (inData[0] - outData[0]) * coef + outData[0];
+			int g = (inData[1] - outData[1]) * coef + outData[1];
+			int b = (inData[2] - outData[2]) * coef + outData[2];
+			if (r < 0) {
+				r = 0;
+			}
+			else if (r > 255) {
+				r = 255;
+			}
+
+			if (g < 0) {
+				g = 0;
+			}
+			else if (g > 255) {
+				g = 255;
+			}
+
+			if (b < 0) {
+				b = 0;
+			}
+			else if (b > 255) {
+				b = 255;
+			}
+
+			outData[0] = r;
+			outData[1] = g;
+			outData[2] = b;
+
+			inData += 3;
+			outData += 3;
+		}
+	}
+
+}

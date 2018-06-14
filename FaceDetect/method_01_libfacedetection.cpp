@@ -5,6 +5,14 @@
 
 #define DETECT_BUFFER_SIZE	0x20000
 
+class Timer {
+private:
+	unsigned long begTime;
+public:
+	void start() { begTime = clock(); }
+	float elapsedTime() { return float((unsigned long)clock() - begTime) / CLOCKS_PER_SEC; }
+};
+
 int main(int argc, char* argv[])
 {
 	std::string picPath = "../TestSets/face_004.jpg";

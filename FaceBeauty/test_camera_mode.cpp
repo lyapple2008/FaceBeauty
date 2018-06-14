@@ -5,6 +5,7 @@
 #include "skinSegment.h"
 #include "EdgePreservingFilter.h"
 #include "skinWhiten.h"
+#include "preprocess.h"
 
 class Timer {
 private:
@@ -44,17 +45,19 @@ int main(int argc, char* argv[])
 		//-----------------------------------------------
 		timer.start();
 
-		cv::Mat outFrame;
-		int d = 7;
-		filter_by_bilaterFiler_opencv(inFrame, outFrame, d, d * 2, d * 2);
-		//float sigma_spatial = 0.01f;
-		//float sigma_range = 0.09f;
-		//filter_by_rbf(inFrame, outFrame, sigma_spatial, sigma_range);
+		whiteBalance(inFrame, outFrame);
 
-		cv::Mat skinMask;
+		cv::Mat outFrame;
+		//int d = 7;
+		//filter_by_bilaterFiler_opencv(inFrame, outFrame, d, d * 2, d * 2);
+		float sigma_spatial = 0.01f;
+		float sigma_range = 0.09f;
+		filter_by_rbf(inFrame, outFrame, sigma_spatial, sigma_range);
+
+		//cv::Mat skinMask;
 		//skinSegment_hsv(inFrame, skinMask);
-		skinSegment_ycbcr_cbcr(inFrame, skinMask);
-		cv::imshow("skinMask", skinMask);
+		//skinSegment_ycbcr_cbcr(inFrame, skinMask);
+		//cv::imshow("skinMask", skinMask);
 
 		float level = 0.5;
 		skinWhiten_brightness(outFrame, level);

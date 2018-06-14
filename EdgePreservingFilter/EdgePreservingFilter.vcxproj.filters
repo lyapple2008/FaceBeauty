@@ -15,7 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="methd_01_bilateralFilter.cpp">
+    <ClCompile Include="method_02_guidedFilter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="guidedfilter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -53,8 +53,8 @@ int main(int argc, char* argv[])
 	//skinSegment_hsv(inFrame, skinMask);
 	//cv::imshow("skinMask", skinMask);
 
-	//float level = 0.5;
-	//skinWhiten_brightness(outFrame, level);
+	float level = 0.5;
+	skinWhiten_brightness(outFrame, level);
 
 	//cv::Mat mergeFrame = outFrame.clone();
 	//std::function<bool(uint8_t)> func1 = [](uint8_t x) {return x == 255; };

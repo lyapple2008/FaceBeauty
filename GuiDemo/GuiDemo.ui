@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
-    <height>467</height>
+    <width>1073</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>GuiDemo</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout" columnstretch="2,2,1">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -27,8 +27,8 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item row="0" column="0">
-     <widget class="QLabel" name="imageLabel">
+    <item row="0" column="1">
+     <widget class="QLabel" name="beautyLabel">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -40,7 +40,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="0" column="2">
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="leftMargin">
        <number>9</number>
@@ -124,7 +124,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QTextBrowser" name="textBrowser">
+       <widget class="QTextEdit" name="textEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -140,6 +140,13 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="rawLabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>

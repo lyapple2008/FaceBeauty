@@ -7,18 +7,18 @@
 #define CLIP3(x, a, b) MIN2(MAX2(a,x), b)
 
 void filter_by_rbf(cv::Mat& inFrame, cv::Mat& outFrame, 
-							 float sigma_spatial, float sigma_range)
+							 float sigma_spatial, float sigma_range, float *buffer)
 {
-	uint8_t *img_out = NULL;
+	uint8_t *img_out = outFrame.ptr(0);
 	int width = inFrame.cols;
 	int height = inFrame.rows;
 	int channels = inFrame.channels();
 
-	outFrame = cv::Mat::zeros(inFrame.size(), inFrame.type());
+	//outFrame = cv::Mat::zeros(inFrame.size(), inFrame.type());
 
 	recursive_bf(inFrame.ptr(0), img_out, 
 				sigma_spatial, sigma_range,
-				width, height, channels);
+				width, height, channels, buffer);
 
 	uint8_t *pImg = img_out;
 	for (int i = 0; i < height; i++) {
@@ -28,7 +28,7 @@ void filter_by_rbf(cv::Mat& inFrame, cv::Mat& outFrame,
 		pImg += rowLen;
 	}
 
-	delete[] img_out;
+	//delete[] img_out;
 }
 
 void filter_by_bilaterFiler_opencv(cv::Mat& inFrame, cv::Mat& outFrame,

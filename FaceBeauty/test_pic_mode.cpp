@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	//-----------------------------------------------
 	timer.start();
 
-	cv::Mat outFrame;
+	cv::Mat outFrame(inFrame.size(), inFrame.type());
 
 	//whiteBalance(inFrame, outFrame);
 	//cv::imshow("whiteBalance", outFrame);
@@ -42,13 +42,24 @@ int main(int argc, char* argv[])
 	//filter_by_bilaterFiler_opencv(inFrame, outFrame, d, d * 2, d * 2);
 	float sigma_spatial = 0.01f;
 	float sigma_range = 0.1f;
-	filter_by_rbf(inFrame, outFrame, sigma_spatial, sigma_range);
+	int width = inFrame.cols;
+	int height = inFrame.rows;
+	int channel = inFrame.channels();
+	const int width_height = width * height;
+	const int width_channel = width * channel;
+	const int width_height_channel = width * height * channel;
+	float *buffer = new float[(width_height_channel + width_height
+		+ width_channel + width) * 2];
+	filter_by_rbf(inFrame, outFrame, sigma_spatial, sigma_range, buffer);
+	delete[] buffer;
 	//float lambda = 0.63;
 	//int K = 10;
 	//int niters = 2;
 	//filter_by_AnisotropicFilter(inFrame, outFrame, lambda, K, niters);
+	std::cout << timer.elapsedTime() * 1000 << std::endl;
 
-	cv::imwrite("result.jpg", outFrame);
+
+	//cv::imwrite("result.jpg", outFrame);
 	//cv::Mat skinMask;
 	//skinSegment_hsv(inFrame, skinMask);
 	//cv::imshow("skinMask", skinMask);

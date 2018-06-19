@@ -19,8 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="guidedfilter.cpp" />
-    <ClCompile Include="method_02_guidedFilter.cpp" />
+    <ClCompile Include="methd_01_bilateralFilter.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E974BB5D-019D-485A-9172-9F443F2D18BF}</ProjectGuid>

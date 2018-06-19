@@ -20,7 +20,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QTextBrowser>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -31,7 +31,7 @@ class Ui_GuiDemoClass
 public:
     QWidget *centralWidget;
     QGridLayout *gridLayout;
-    QLabel *imageLabel;
+    QLabel *beautyLabel;
     QVBoxLayout *verticalLayout;
     QLabel *label_2;
     QSlider *filterLevelSlider;
@@ -39,13 +39,14 @@ public:
     QLabel *label_3;
     QSlider *whiteLevelSlider;
     QSpacerItem *verticalSpacer;
-    QTextBrowser *textBrowser;
+    QTextEdit *textEdit;
+    QLabel *rawLabel;
 
     void setupUi(QMainWindow *GuiDemoClass)
     {
         if (GuiDemoClass->objectName().isEmpty())
             GuiDemoClass->setObjectName(QStringLiteral("GuiDemoClass"));
-        GuiDemoClass->resize(830, 467);
+        GuiDemoClass->resize(1073, 441);
         centralWidget = new QWidget(GuiDemoClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -53,15 +54,15 @@ public:
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setContentsMargins(0, 0, 0, 0);
-        imageLabel = new QLabel(centralWidget);
-        imageLabel->setObjectName(QStringLiteral("imageLabel"));
+        beautyLabel = new QLabel(centralWidget);
+        beautyLabel->setObjectName(QStringLiteral("beautyLabel"));
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(imageLabel->sizePolicy().hasHeightForWidth());
-        imageLabel->setSizePolicy(sizePolicy);
+        sizePolicy.setHeightForWidth(beautyLabel->sizePolicy().hasHeightForWidth());
+        beautyLabel->setSizePolicy(sizePolicy);
 
-        gridLayout->addWidget(imageLabel, 0, 0, 1, 1);
+        gridLayout->addWidget(beautyLabel, 0, 1, 1, 1);
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(6);
@@ -109,20 +110,28 @@ public:
 
         verticalLayout->addItem(verticalSpacer);
 
-        textBrowser = new QTextBrowser(centralWidget);
-        textBrowser->setObjectName(QStringLiteral("textBrowser"));
+        textEdit = new QTextEdit(centralWidget);
+        textEdit->setObjectName(QStringLiteral("textEdit"));
         QSizePolicy sizePolicy2(QSizePolicy::Minimum, QSizePolicy::Expanding);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(textBrowser->sizePolicy().hasHeightForWidth());
-        textBrowser->setSizePolicy(sizePolicy2);
-        textBrowser->setMinimumSize(QSize(200, 0));
+        sizePolicy2.setHeightForWidth(textEdit->sizePolicy().hasHeightForWidth());
+        textEdit->setSizePolicy(sizePolicy2);
+        textEdit->setMinimumSize(QSize(200, 0));
 
-        verticalLayout->addWidget(textBrowser);
+        verticalLayout->addWidget(textEdit);
 
 
-        gridLayout->addLayout(verticalLayout, 0, 1, 1, 1);
+        gridLayout->addLayout(verticalLayout, 0, 2, 1, 1);
 
+        rawLabel = new QLabel(centralWidget);
+        rawLabel->setObjectName(QStringLiteral("rawLabel"));
+
+        gridLayout->addWidget(rawLabel, 0, 0, 1, 1);
+
+        gridLayout->setColumnStretch(0, 2);
+        gridLayout->setColumnStretch(1, 2);
+        gridLayout->setColumnStretch(2, 1);
         GuiDemoClass->setCentralWidget(centralWidget);
 
         retranslateUi(GuiDemoClass);
@@ -133,9 +142,10 @@ public:
     void retranslateUi(QMainWindow *GuiDemoClass)
     {
         GuiDemoClass->setWindowTitle(QApplication::translate("GuiDemoClass", "GuiDemo", Q_NULLPTR));
-        imageLabel->setText(QString());
+        beautyLabel->setText(QString());
         label_2->setText(QApplication::translate("GuiDemoClass", "\347\243\250\347\232\256\347\250\213\345\272\246", Q_NULLPTR));
         label_3->setText(QApplication::translate("GuiDemoClass", "\347\276\216\347\231\275\347\250\213\345\272\246", Q_NULLPTR));
+        rawLabel->setText(QString());
     } // retranslateUi
 
 };

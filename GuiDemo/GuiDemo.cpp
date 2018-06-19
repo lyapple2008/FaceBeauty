@@ -1,6 +1,9 @@
 #include "GuiDemo.h"
 #include <QTimer>
 #include <iostream>
+#include <opencv2/opencv.hpp>
+#include "../FaceBeauty/EdgePreservingFilter.h"
+#include "../FaceBeauty/skinWhiten.h"
 
 GuiDemo::GuiDemo(QWidget *parent)
 	: QMainWindow(parent)
@@ -10,16 +13,32 @@ GuiDemo::GuiDemo(QWidget *parent)
 	if (initVideoCapture()) {
 		rate = videoCapture.get(cv::CAP_PROP_FPS);
 		rate = 15.0f;
-		videoCapture >> mCVFrame;
-		if (!mCVFrame.empty()) {
-			mImage = mat2Image(mCVFrame);
-			ui.imageLabel->setPixmap(QPixmap::fromImage(mImage));
+		videoCapture >> mRawFrame;
+		if (!mRawFrame.empty()) {
+			int width = mRawFrame.cols;
+			int height = mRawFrame.rows;
+			int channel = mRawFrame.channels();
+			const int width_height = width * height;
+			const int width_channel = width * channel;
+			const int width_height_channel = width * height * channel;
+			interBuf = new float[(width_height_channel + width_height
+								     + width_channel + width) * 2];
+
+
+			mBeautyFrame = mRawFrame.clone();
+			mRawImage = mat2Image(mRawFrame);
+			ui.rawLabel->setPixmap(QPixmap::fromImage(mRawImage));
 			mTimer = new QTimer(this);
 			mTimer->setInterval(1000 / rate);
 			connect(mTimer, SIGNAL(timeout()), this, SLOT(nextFrame()));
 			mTimer->start();
 		}
 	}
+}
+
+GuiDemo::~GuiDemo()
+{
+	delete[] interBuf;
 }
 
 bool GuiDemo::initVideoCapture()
@@ -33,7 +52,20 @@ bool GuiDemo::initVideoCapture()
 
 void GuiDemo::faceBeautyProcess()
 {
+	unsigned long beginTime, endTime;
+	beginTime = clock();
 
+	filter_by_rbf(mRawFrame, mBeautyFrame, buffingLevel, 0.1, interBuf);
+
+	skinWhiten_brightness(mBeautyFrame, whiteLevel);
+
+	endTime = clock();
+	float elapsedTime = float((unsigned long)endTime - beginTime) / CLOCKS_PER_SEC;
+	float fps = 1.0 / elapsedTime;
+	int width = mRawFrame.cols;
+	int height = mRawFrame.rows;
+	QString outStr = QString("Image(%1*%2) -- %3ms -- %4fps").arg(width).arg(height).arg(elapsedTime*1000).arg(fps);
+	outputLog(outStr);
 }
 
 QImage GuiDemo::mat2Image(cv::Mat& cvImg)
@@ -68,18 +100,34 @@ QImage GuiDemo::mat2Image(cv::Mat& cvImg)
 
 void GuiDemo::outputLog(QString cnt)
 {
-	
+	ui.textEdit->append(cnt);
 }
 
 void GuiDemo::nextFrame()
 {
-	std::cout << "nextFrame" << std::endl;
 
-	videoCapture >> mCVFrame;
+	videoCapture >> mRawFrame;
 
-	if (!mCVFrame.empty()) {
-		mImage = mat2Image(mCVFrame);
-		ui.imageLabel->setPixmap(QPixmap::fromImage(mImage));
+	if (!mRawFrame.empty()) {
+
+		faceBeautyProcess();
+
+		mRawImage = mat2Image(mRawFrame);
+		ui.rawLabel->setPixmap(QPixmap::fromImage(mRawImage));
+		mBeautyImage = mat2Image(mBeautyFrame);
+		ui.beautyLabel->setPixmap(QPixmap::fromImage(mBeautyImage));
 		update();
 	}
+}
+
+void GuiDemo::on_filterLevelSlider_valueChanged(int level)
+{
+	buffingLevel = (BUFFING_LEVEL_MAX - BUFFING_LEVEL_MIN) / 100.0 * level;
+	std::cout << "buffingLevel: " << buffingLevel << std::endl;
+}
+
+void GuiDemo::on_whiteLevelSlider_valueChanged(int level)
+{
+	whiteLevel = (WHITEN_LEVEL_MAX - WHITEN_LEVEL_MIN) / 100.0 * level;
+	std::cout << "whiteLevel: " << whiteLevel << std::endl;
 }

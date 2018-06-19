@@ -4,7 +4,7 @@
 #include <opencv2/core.hpp>
 
 void filter_by_rbf(cv::Mat& inFrame, cv::Mat& outFrame, 
-						     float sigma_spatial, float sigma_range);
+						     float sigma_spatial, float sigma_range, float *buffer = 0);
 
 void filter_by_bilaterFiler_opencv(cv::Mat& inFrame, cv::Mat& outFrame,
 							int d, double sigma_color, double sigma_space);

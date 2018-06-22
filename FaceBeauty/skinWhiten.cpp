@@ -27,3 +27,8 @@ void skinWhiten_brightness(cv::Mat& img, float level)
 	}
 }
 
+void skinWhiten_logCurve(cv::Mat& img, uint8_t logTable)
+{
+
+}
+

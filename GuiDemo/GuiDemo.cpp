@@ -5,6 +5,10 @@
 #include "../FaceBeauty/EdgePreservingFilter.h"
 #include "../FaceBeauty/skinWhiten.h"
 
+#define MIN2(a, b) ((a) < (b) ? (a) : (b))  
+#define MAX2(a, b) ((a) > (b) ? (a) : (b))
+#define CLIP3(x, a, b) MIN2(MAX2(a,x), b)
+
 GuiDemo::GuiDemo(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -50,6 +54,38 @@ bool GuiDemo::initVideoCapture()
 	return ret;
 }
 
+void frameEnhance(cv::Mat& outFrame, cv::Mat& inFrame, float coef)
+{
+	int nr = inFrame.rows;
+	int nc = inFrame.cols;
+	int nChannels = inFrame.channels();
+
+	if (nr != outFrame.rows ||
+		nc != outFrame.cols ||
+		nChannels != outFrame.channels() ||
+		nChannels != 3) {
+		return;
+	}
+
+	for (int i = 0; i < nr; i++) {
+		uint8_t *inData = inFrame.ptr<uint8_t>(i);
+		uint8_t *outData = outFrame.ptr<uint8_t>(i);
+		for (int j = 0; j < nc; j++) {
+			int r = CLIP3((inData[0] - outData[0]) * coef + outData[0], 0, 255);
+			int g = CLIP3((inData[1] - outData[1]) * coef + outData[1], 0, 255);
+			int b = CLIP3((inData[2] - outData[2]) * coef + outData[2], 0, 255);
+
+			outData[0] = r;
+			outData[1] = g;
+			outData[2] = b;
+
+			inData += 3;
+			outData += 3;
+		}
+	}
+
+}
+
 void GuiDemo::faceBeautyProcess()
 {
 	unsigned long beginTime, endTime;
@@ -58,6 +94,9 @@ void GuiDemo::faceBeautyProcess()
 	filter_by_rbf(mRawFrame, mBeautyFrame, buffingLevel, 0.1, interBuf);
 
 	skinWhiten_brightness(mBeautyFrame, whiteLevel);
+
+	float coef = 0.3;
+	frameEnhance(mBeautyFrame, mRawFrame, coef);
 
 	endTime = clock();
 	float elapsedTime = float((unsigned long)endTime - beginTime) / CLOCKS_PER_SEC;

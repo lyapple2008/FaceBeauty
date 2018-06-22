@@ -4,9 +4,9 @@
 #include "ui_GuiDemo.h"
 #include <opencv2/opencv.hpp>
 
-#define BUFFING_LEVEL_MAX	0.07
+#define BUFFING_LEVEL_MAX	0.02
 #define BUFFING_LEVEL_MIN	0.0
-#define WHITEN_LEVEL_MAX	1.0
+#define WHITEN_LEVEL_MAX	0.7
 #define WHITEN_LEVEL_MIN	0.0
 
 class GuiDemo : public QMainWindow

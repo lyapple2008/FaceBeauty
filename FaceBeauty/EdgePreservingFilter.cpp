@@ -20,13 +20,13 @@ void filter_by_rbf(cv::Mat& inFrame, cv::Mat& outFrame,
 				sigma_spatial, sigma_range,
 				width, height, channels, buffer);
 
-	uint8_t *pImg = img_out;
-	for (int i = 0; i < height; i++) {
-		uint8_t *data = outFrame.ptr<uint8_t>(i);
-		int rowLen = width * channels;
-		memcpy(data, pImg, rowLen);
-		pImg += rowLen;
-	}
+	//uint8_t *pImg = img_out;
+	//for (int i = 0; i < height; i++) {
+	//	uint8_t *data = outFrame.ptr<uint8_t>(i);
+	//	int rowLen = width * channels;
+	//	memcpy(data, pImg, rowLen);
+	//	pImg += rowLen;
+	//}
 
 	//delete[] img_out;
 }

@@ -103,7 +103,7 @@ void GuiDemo::faceBeautyProcess()
 	float fps = 1.0 / elapsedTime;
 	int width = mRawFrame.cols;
 	int height = mRawFrame.rows;
-	QString outStr = QString("Image(%1*%2) -- %3ms -- %4fps").arg(width).arg(height).arg(elapsedTime*1000).arg(fps);
+	QString outStr = QString("%1*%2-%3ms-%4fps").arg(width).arg(height).arg(elapsedTime*1000).arg(fps,0,'g',3);
 	outputLog(outStr);
 }
 

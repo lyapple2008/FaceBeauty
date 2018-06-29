@@ -95,22 +95,17 @@ void GuiDemo::faceBeautyProcess()
 
 	filter_by_rbf(mRawFrame, mBeautyFrame, buffingLevel, 0.1, interBuf);
 
-	skinWhiten_brightness(mBeautyFrame, whiteLevel);
-
-	float coef = 0.3;
-	frameEnhance(mBeautyFrame, mRawFrame, coef);
-
 	cv::Mat skinMask;
 	skinSegment_ycbcr_cbcr(mRawFrame, skinMask);
 	cv:imshow("skinMask", skinMask);
 
-	//cv::Mat mergeFrame;
-	//cv::seamlessClone(mBeautyFrame, mRawFrame, skinMask, cv::Point(mBeautyFrame.cols/2, mBeautyFrame.rows/2), mergeFrame, cv::NORMAL_CLONE);
-	//cv::imshow("mergeFrame", mergeFrame);
+	frame_enhance_with_mask(mBeautyFrame, mRawFrame, skinMask, 1.0);
+	cv::imshow("mergeFrame", mBeautyFrame);
 
-	cv::Mat mergeFrame = mBeautyFrame.clone();
-	frame_enhance_with_mask(mergeFrame, mRawFrame, skinMask, 1.0);
-	cv::imshow("mergeFrame", mergeFrame);
+	skinWhiten_brightness(mBeautyFrame, whiteLevel);
+
+	float coef = 0.3;
+	frameEnhance(mBeautyFrame, mRawFrame, coef);
 
 	endTime = clock();
 	float elapsedTime = float((unsigned long)endTime - beginTime) / CLOCKS_PER_SEC;

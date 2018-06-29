@@ -53,6 +53,10 @@ void skinSegment_rgb(cv::Mat& inFrame, cv::Mat& binaryFrame)
 
 void skinSegment_ycbcr_cbcr(cv::Mat& inFrame, cv::Mat& binaryFrame)
 {
+	uint8_t RANGE_CB_MIN = 77;
+	uint8_t RANGE_CB_MAX = 127;
+	uint8_t RANGE_CR_MIN = 133;
+	uint8_t RANGE_CR_MAX = 173;
 	binaryFrame = cv::Mat(inFrame.size(), CV_8UC1, cv::Scalar(0));
 	cv::Mat ycbcrFrame;
 	cv::cvtColor(inFrame, ycbcrFrame, CV_BGR2YCrCb);
@@ -66,8 +70,8 @@ void skinSegment_ycbcr_cbcr(cv::Mat& inFrame, cv::Mat& binaryFrame)
 		for (int j = 0; j < nc; j++) {
 			uint8_t cr = data[1];
 			uint8_t cb = data[2];
-			if (cr >= 133 && cr <= 173 &&
-				cb >= 77 && cb <= 127) {
+			if (cr >= RANGE_CR_MIN && cr <= RANGE_CR_MAX &&
+				cb >= RANGE_CB_MIN && cb <= RANGE_CB_MAX) {
 				binaryData[j] = 255;
 			}
 			data += inFrame.channels();

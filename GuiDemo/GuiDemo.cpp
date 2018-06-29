@@ -4,6 +4,8 @@
 #include <opencv2/opencv.hpp>
 #include "../FaceBeauty/EdgePreservingFilter.h"
 #include "../FaceBeauty/skinWhiten.h"
+#include "../FaceBeauty/skinSegment.h"
+#include "../FaceBeauty/preprocess.h"
 
 #define MIN2(a, b) ((a) < (b) ? (a) : (b))  
 #define MAX2(a, b) ((a) > (b) ? (a) : (b))
@@ -97,6 +99,18 @@ void GuiDemo::faceBeautyProcess()
 
 	float coef = 0.3;
 	frameEnhance(mBeautyFrame, mRawFrame, coef);
+
+	cv::Mat skinMask;
+	skinSegment_ycbcr_cbcr(mRawFrame, skinMask);
+	cv:imshow("skinMask", skinMask);
+
+	//cv::Mat mergeFrame;
+	//cv::seamlessClone(mBeautyFrame, mRawFrame, skinMask, cv::Point(mBeautyFrame.cols/2, mBeautyFrame.rows/2), mergeFrame, cv::NORMAL_CLONE);
+	//cv::imshow("mergeFrame", mergeFrame);
+
+	cv::Mat mergeFrame = mBeautyFrame.clone();
+	frame_enhance_with_mask(mergeFrame, mRawFrame, skinMask, 1.0);
+	cv::imshow("mergeFrame", mergeFrame);
 
 	endTime = clock();
 	float elapsedTime = float((unsigned long)endTime - beginTime) / CLOCKS_PER_SEC;

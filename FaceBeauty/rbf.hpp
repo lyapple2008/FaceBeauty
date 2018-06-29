@@ -69,7 +69,7 @@ inline void recursive_bf(
     unsigned char * img_in, 
     unsigned char *& img_out, 
     float sigma_spatial, float sigma_range, 
-    int width, int height, int channel, 
+    int width, int height, int channel,
     float * buffer /*= 0*/);
 
 // ----------------------------------------------------------------------

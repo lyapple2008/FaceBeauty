@@ -18,9 +18,9 @@ int main(int argc, char* argv[])
 	cv::Mat maskFrame = cv::Mat(inFrame.rows, inFrame.cols, CV_8UC1, cv::Scalar(0));
 
 	//skinSegment_01(inFrame, maskFrame);
-	//skinSegment_02(inFrame, maskFrame);
+	skinSegment_02(inFrame, maskFrame);
 	//skinSegment_03(inFrame, maskFrame);
-	skinSegment_04(inFrame, maskFrame);
+	//skinSegment_04(inFrame, maskFrame);
 
 	cv::imshow("inFrame", inFrame);
 	cv::imshow("maskFrame", maskFrame);

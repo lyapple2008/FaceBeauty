@@ -23,17 +23,18 @@ void frameEnhance(cv::Mat& outFrame, cv::Mat& inFrame, float coef);
 int main(int argc, char* argv[])
 {
 	Timer timer;
-	std::string picPath = "../TestSets/face_006.jpg";
+	std::string picPath = "../TestSets/face_003.jpg";
 	cv::Mat inFrame = cv::imread(picPath);
 	if (inFrame.empty()) {
 		std::cout << "Fail to open " << picPath << std::endl;
 		return -1;
 	}
-	
+	cv::imshow("before", inFrame);
+
 	//-----------------------------------------------
 	timer.start();
 
-	cv::Mat outFrame(inFrame.size(), inFrame.type());
+	cv::Mat outFrame = inFrame.clone();
 
 	//whiteBalance(inFrame, outFrame);
 	//cv::imshow("whiteBalance", outFrame);
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
 	const int width_height_channel = width * height * channel;
 	float *buffer = new float[(width_height_channel + width_height
 		+ width_channel + width) * 2];
-	filter_by_rbf(inFrame, outFrame, sigma_spatial, sigma_range, buffer);
+	filter_by_rbf(outFrame, outFrame, sigma_spatial, sigma_range, buffer);
 	delete[] buffer;
 	//float lambda = 0.63;
 	//int K = 10;
@@ -60,20 +61,25 @@ int main(int argc, char* argv[])
 
 
 	//cv::imwrite("result.jpg", outFrame);
-	//cv::Mat skinMask;
-	//skinSegment_hsv(inFrame, skinMask);
-	//cv::imshow("skinMask", skinMask);
+	cv::Mat skinMask;
+	skinSegment_ycbcr_cbcr(outFrame, skinMask);
+	cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2));
+	cv::dilate(skinMask, skinMask, element);
+	cv::imshow("skinMask", skinMask);
 
 	float level = 0.5;
 	skinWhiten_brightness(outFrame, level);
 
-	//cv::Mat mergeFrame = outFrame.clone();
+	float coef = 0.3;
+	frameEnhance(outFrame, inFrame, coef);
+	//frame_enhance_with_mask(outFrame, inFrame, skinMask, coef);
+
+	cv::Mat mergeFrame;
 	//std::function<bool(uint8_t)> func1 = [](uint8_t x) {return x == 255; };
 	//mergeFrameMask(mergeFrame, inFrame, skinMask, func1);
-	//cv::imshow("mergeFrame", mergeFrame);
-
-	//float coef = 0.3;
-	//frameEnhance(outFrame, inFrame, coef);
+	cv::seamlessClone(outFrame, inFrame, skinMask, cv::Point(outFrame.cols / 2, outFrame.rows / 2), mergeFrame, cv::NORMAL_CLONE);
+	//frame_enhance_with_mask(mergeFrame, inFrame, skinMask, 1.0);
+	cv::imshow("mergeFrame", mergeFrame);
 
 	float consumeTime = timer.elapsedTime();
 	float fps = 1.0 / consumeTime;
@@ -81,7 +87,7 @@ int main(int argc, char* argv[])
 	std::cout << " -- " << consumeTime * 1000 << "ms";
 	std::cout << " -- " << fps << "fps" << std::endl;
 
-	cv::imshow("before", inFrame);
+	
 	cv::imshow("after", outFrame);
 	cv::waitKey(0);
 

@@ -13,6 +13,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QButtonGroup>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHeaderView>
@@ -38,6 +39,7 @@ public:
     QFrame *line;
     QLabel *label_3;
     QSlider *whiteLevelSlider;
+    QCheckBox *debugCheckbox;
     QSpacerItem *verticalSpacer;
     QTextEdit *textEdit;
     QLabel *rawLabel;
@@ -106,6 +108,11 @@ public:
 
         verticalLayout->addWidget(whiteLevelSlider);
 
+        debugCheckbox = new QCheckBox(centralWidget);
+        debugCheckbox->setObjectName(QStringLiteral("debugCheckbox"));
+
+        verticalLayout->addWidget(debugCheckbox);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer);
@@ -145,6 +152,7 @@ public:
         beautyLabel->setText(QString());
         label_2->setText(QApplication::translate("GuiDemoClass", "\347\243\250\347\232\256\347\250\213\345\272\246", Q_NULLPTR));
         label_3->setText(QApplication::translate("GuiDemoClass", "\347\276\216\347\231\275\347\250\213\345\272\246", Q_NULLPTR));
+        debugCheckbox->setText(QApplication::translate("GuiDemoClass", "DebugModel", Q_NULLPTR));
         rawLabel->setText(QString());
     } // retranslateUi
 

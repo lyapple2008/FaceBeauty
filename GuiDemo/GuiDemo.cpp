@@ -33,6 +33,7 @@ GuiDemo::GuiDemo(QWidget *parent)
 
 			mBeautyFrame = mRawFrame.clone();
 			mRawImage = mat2Image(mRawFrame);
+			mSkinMask = cv::Mat(mRawFrame.size(), CV_8UC1, cv::Scalar(0));
 			ui.rawLabel->setPixmap(QPixmap::fromImage(mRawImage));
 			mTimer = new QTimer(this);
 			mTimer->setInterval(1000 / rate);
@@ -95,12 +96,13 @@ void GuiDemo::faceBeautyProcess()
 
 	filter_by_rbf(mRawFrame, mBeautyFrame, buffingLevel, 0.1, interBuf);
 
-	cv::Mat skinMask;
-	skinSegment_ycbcr_cbcr(mRawFrame, skinMask);
-	cv:imshow("skinMask", skinMask);
+	skinSegment_ycbcr_cbcr(mRawFrame, mSkinMask);
+	
+	if (mIsDebug) {
+		cv:imshow("skinMask", mSkinMask);
+	}
 
-	frame_enhance_with_mask(mBeautyFrame, mRawFrame, skinMask, 1.0);
-	cv::imshow("mergeFrame", mBeautyFrame);
+	frame_enhance_with_mask(mBeautyFrame, mRawFrame, mSkinMask, 1.0);
 
 	skinWhiten_brightness(mBeautyFrame, whiteLevel);
 
@@ -178,4 +180,14 @@ void GuiDemo::on_whiteLevelSlider_valueChanged(int level)
 {
 	whiteLevel = (WHITEN_LEVEL_MAX - WHITEN_LEVEL_MIN) / 100.0 * level;
 	std::cout << "whiteLevel: " << whiteLevel << std::endl;
+}
+
+void GuiDemo::on_debugCheckbox_stateChanged(int state)
+{
+	if (state == Qt::Checked) {
+		mIsDebug = true;
+	}
+	else {
+		mIsDebug = false;
+	}
 }

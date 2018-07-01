@@ -157,7 +157,7 @@
     <ClCompile Include="preprocess.cpp" />
     <ClCompile Include="skinSegment.cpp" />
     <ClCompile Include="skinWhiten.cpp" />
-    <ClCompile Include="test_pic_mode.cpp" />
+    <ClCompile Include="test_pic_mode_01.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EdgePreservingFilter.h" />

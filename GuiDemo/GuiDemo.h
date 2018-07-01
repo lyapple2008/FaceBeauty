@@ -26,13 +26,16 @@ private slots:
 	void nextFrame();
 	void on_filterLevelSlider_valueChanged(int level);
 	void on_whiteLevelSlider_valueChanged(int level);
+	void on_debugCheckbox_stateChanged(int state);
 private:
 	Ui::GuiDemoClass ui;
+	bool mIsDebug = false;
 
 	QImage mRawImage;
 	QImage mBeautyImage;
 	cv::Mat mRawFrame;
 	cv::Mat mBeautyFrame;
+	cv::Mat mSkinMask;
 	cv::VideoCapture videoCapture;
 
 	QTimer *mTimer;

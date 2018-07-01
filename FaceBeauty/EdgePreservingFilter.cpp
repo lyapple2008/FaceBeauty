@@ -40,7 +40,7 @@ void filter_by_bilaterFiler_opencv(cv::Mat& inFrame, cv::Mat& outFrame,
 void filter_by_AnisotropicFilter(cv::Mat& inFrame, cv::Mat& outFrame, 
 						float lambda, float k, int niters)
 {
-	outFrame = cv::Mat::zeros(inFrame.size(), inFrame.type());
+	outFrame = cv::Mat::zeros(inFrame.size(), CV_32SC3);
 	int nr = inFrame.rows;
 	int nc = inFrame.cols;
 	int nChannels = inFrame.channels();
@@ -108,5 +108,193 @@ void filter_by_AnisotropicFilter(cv::Mat& inFrame, cv::Mat& outFrame,
 
 			}
 		}
+	}
+}
+
+static void computeIntegralFrame(cv::Mat& inFrame, cv::Mat& integralFrame)
+{
+	int cols = inFrame.cols;
+	int rows = inFrame.rows;
+	int channels = inFrame.channels();
+
+	if (cols == 0 || rows == 0 || channels != 3) {
+		return;
+	}
+
+	integralFrame = cv::Mat::zeros(inFrame.size(), CV_32SC3);
+
+	uint8_t* inData = inFrame.ptr<uint8_t>(0);
+	int32_t* sumData = integralFrame.ptr<int32_t>(0);
+	int sumB = 0, sumG = 0, sumR = 0;
+	for (int c = 0; c < cols; c++) {
+		sumB += inData[0];
+		sumG += inData[1];
+		sumR += inData[2];
+		sumData[0] = sumB;
+		sumData[1] = sumG;
+		sumData[2] = sumR;
+
+		inData += 3;
+		sumData += 3;
+	}
+
+	for (int r = 1; r < rows; r++) {
+		uint8_t* curData = inFrame.ptr<uint8_t>(r);
+		int32_t* preSumData = integralFrame.ptr<int32_t>(r-1);
+		int32_t* curSumData = integralFrame.ptr<int32_t>(r);
+		sumB = 0; sumG = 0; sumR = 0;
+		for (int c = 0; c < cols; c++) {
+			sumB += curData[0];
+			sumG += curData[1];
+			sumR += curData[2];
+
+			curSumData[0] = sumB + preSumData[0];
+			curSumData[1] = sumG + preSumData[1];
+			curSumData[2] = sumR + preSumData[2];
+
+			curData += 3;
+			preSumData += 3;
+			curSumData += 3;
+		}
+	}
+}
+
+static void computePowIntegralFrame(cv::Mat& inFrame, cv::Mat& integralFrame)
+{
+	int cols = inFrame.cols;
+	int rows = inFrame.rows;
+	int channels = inFrame.channels();
+
+	if (cols == 0 || rows == 0 || channels != 3) {
+		return;
+	}
+
+	integralFrame = cv::Mat::zeros(inFrame.size(), CV_64FC3);
+
+	uint8_t* inData = inFrame.ptr<uint8_t>(0);
+	double* sumData = integralFrame.ptr<double>(0);
+	int sumB = 0, sumG = 0, sumR = 0;
+	for (int c = 0; c < cols; c++) {
+		sumB += inData[0] * inData[0];
+		sumG += inData[1] * inData[1];
+		sumR += inData[2] * inData[2];
+		sumData[0] = sumB;
+		sumData[1] = sumG;
+		sumData[2] = sumR;
+
+		inData += 3;
+		sumData += 3;
+	}
+
+	for (int r = 1; r < rows; r++) {
+		uint8_t* curData = inFrame.ptr<uint8_t>(r);
+		double* preSumData = integralFrame.ptr<double>(r-1);
+		double* curSumData = integralFrame.ptr<double>(r);
+		sumB = 0; sumG = 0; sumR = 0;
+		for (int c = 0; c < cols; c++) {
+			sumB += curData[0] * curData[0];
+			sumG += curData[1] * curData[1];
+			sumR += curData[2] * curData[2];
+
+			curSumData[0] = sumB + preSumData[0];
+			curSumData[1] = sumG + preSumData[1];
+			curSumData[2] = sumR + preSumData[2];
+
+			curData += 3;
+			preSumData += 3;
+			curSumData += 3;
+		}
+	}
+}
+
+void filter_by_localMeanSquareFilter(cv::Mat& inFrame, cv::Mat& outFrame, float delta)
+{
+	int rows = inFrame.rows;
+	int cols = inFrame.cols;
+	int channels = inFrame.channels();
+	int winHalfW = MAX2(rows, cols) * 0.02;
+	int winHalfH = winHalfW;
+
+	if (rows < (2*winHalfH + 1) || cols < (2*winHalfW + 1) || channels != 3) {
+		return ;
+	}
+
+	cv::Mat integralFrame;
+	computeIntegralFrame(inFrame, integralFrame);
+
+	cv::Mat powIntegralFrame;
+	computePowIntegralFrame(inFrame, powIntegralFrame);
+
+	cv::Mat sumFrame, sqSumFrame;
+	cv::integral(inFrame, sumFrame, sqSumFrame);
+
+
+	outFrame = cv::Mat::zeros(inFrame.size(), inFrame.type());
+	float invWinSize = 1.0 / ((2*winHalfH + 1) * (2*winHalfW + 1));
+	for (int r = winHalfH; r < rows - winHalfH; r++) {
+		int32_t* topIntData = integralFrame.ptr<int32_t>(r - winHalfH);
+		int32_t* intData = integralFrame.ptr<int32_t>(r);
+		int32_t* bottomIntData = integralFrame.ptr<int32_t>(r + winHalfH);
+		double* topPowIntData = powIntegralFrame.ptr<double>(r - winHalfH);
+		double* powIntData = powIntegralFrame.ptr<double>(r);
+		double* bottomPowIntData = powIntegralFrame.ptr<double>(r + winHalfH);
+		uint8_t* curOutData = outFrame.ptr<uint8_t>(r);
+		uint8_t* curInData = inFrame.ptr<uint8_t>(r);
+
+		float meanB = 0.0, meanG = 0.0, meanR = 0.0;
+		float varB = 0.0, varG = 0.0, varR = 0.0;
+		float kB = 0.0, kG = 0.0, kR = 0.0;
+		for (int c = winHalfW; c < cols - winHalfW; c++) {
+			meanB = bottomIntData[3 * (c + winHalfW)] - bottomIntData[3 * (c - winHalfW)] 
+					- topIntData[3 * (c + winHalfW)] + topIntData[3 * (c - winHalfW)];
+			meanG = bottomIntData[3 * (c + winHalfW) + 1] - bottomIntData[3 * (c - winHalfW) + 1] 
+					- topIntData[3 * (c + winHalfW) + 1] + topIntData[3 * (c - winHalfW) + 1];
+			meanR = bottomIntData[3 * (c + winHalfW) + 2] - bottomIntData[3 * (c - winHalfW) + 2] 
+					- topIntData[3 * (c + winHalfW) + 2] + topIntData[3 * (c - winHalfW) + 2];
+
+			varB = bottomPowIntData[3 * (c + winHalfW)] - bottomPowIntData[3 * (c - winHalfW)] 
+					- topPowIntData[3 * (c + winHalfW)] + topPowIntData[3 * (c - winHalfW)];
+			varG = bottomPowIntData[3 * (c + winHalfW) + 1] - bottomPowIntData[3 * (c - winHalfW) + 1] 
+					- topPowIntData[3 * (c + winHalfW) + 1] + topPowIntData[3 * (c - winHalfW) + 1];
+			varR = bottomPowIntData[3 * (c + winHalfW) + 2] - bottomPowIntData[3 * (c - winHalfW) + 2] 
+					- topPowIntData[3 * (c + winHalfW) + 2] + topPowIntData[3 * (c - winHalfW) + 2];
+
+			varB = invWinSize * (varB - invWinSize * meanB * meanB);
+			varG = invWinSize * (varG - invWinSize * meanG * meanG);
+			varR = invWinSize * (varR - invWinSize * meanR * meanR);
+
+			meanB = invWinSize * meanB;
+			meanG = invWinSize * meanG;
+			meanR = invWinSize * meanR;
+
+			kB = varB / (varB + delta);
+			kG = varG / (varG + delta);
+			kR = varR / (varR + delta);
+
+			curOutData[3 * c] = CLIP3(curInData[3 * c] * kB + (1 - kB)*meanB, 0, 255);
+			curOutData[3 * c + 1] = CLIP3(curInData[3 * c + 1] * kG + (1 - kG)*meanG, 0, 255);
+			curOutData[3 * c + 2] = CLIP3(curInData[3 * c + 2] * kR + (1 - kR)*meanR, 0, 255);
+		}
+	}
+
+	for (int r = 0; r < winHalfH; r++) {
+		uint8_t* inData = inFrame.ptr<uint8_t>(r);
+		uint8_t* outData = outFrame.ptr<uint8_t>(r);
+		memcpy(outData, inData, cols * channels);
+	}
+
+	for (int r = rows - winHalfH; r < rows; r++) {
+		uint8_t* inData = inFrame.ptr<uint8_t>(r);
+		uint8_t* outData = outFrame.ptr<uint8_t>(r);
+		memcpy(outData, inData, cols * channels);
+	}
+
+	for (int r = winHalfH; r < rows - winHalfH; r++) {
+		uint8_t* inData = inFrame.ptr<uint8_t>(r);
+		uint8_t* outData = outFrame.ptr<uint8_t>(r);
+		memcpy(outData, inData, winHalfW * channels);
+		inData += (cols - winHalfW) * channels;
+		outData += (cols - winHalfW) * channels;
+		memcpy(outData, inData, winHalfW * channels);
 	}
 }

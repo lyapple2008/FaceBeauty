@@ -30,7 +30,6 @@ GuiDemo::GuiDemo(QWidget *parent)
 			interBuf = new float[(width_height_channel + width_height
 								     + width_channel + width) * 2];
 
-
 			mBeautyFrame = mRawFrame.clone();
 			mRawImage = mat2Image(mRawFrame);
 			mSkinMask = cv::Mat(mRawFrame.size(), CV_8UC1, cv::Scalar(0));

@@ -6,7 +6,7 @@
 
 #define BUFFING_LEVEL_MAX	0.02
 #define BUFFING_LEVEL_MIN	0.0
-#define WHITEN_LEVEL_MAX	0.7
+#define WHITEN_LEVEL_MAX	1.5
 #define WHITEN_LEVEL_MIN	0.0
 
 class GuiDemo : public QMainWindow

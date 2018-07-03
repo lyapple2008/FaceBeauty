@@ -14,4 +14,6 @@ void filter_by_AnisotropicFilter(cv::Mat& inFrame, cv::Mat& outFrame,
 
 void filter_by_localMeanSquareFilter(cv::Mat& inFrame, cv::Mat& outFrame, float delta);
 
+void filter_by_localMeanSquareFilter_grayscale(cv::Mat & inFrame, cv::Mat & outFrame, int level);
+
 #endif

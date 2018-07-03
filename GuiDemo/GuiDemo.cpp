@@ -97,16 +97,17 @@ void GuiDemo::faceBeautyProcess()
 	filter_by_rbf(mRawFrame, mBeautyFrame, buffingLevel, 0.1, interBuf);
 
 	skinSegment_ycbcr_cbcr(mRawFrame, mSkinMask);
-	
+	cv::blur(mSkinMask, mSkinMask, cv::Size(45, 45));
+
 	if (mIsDebug) {
 		cv:imshow("skinMask", mSkinMask);
 	}
 
-	frame_enhance_with_mask(mBeautyFrame, mRawFrame, mSkinMask, 1.0);
-
 	skinWhiten_brightness(mBeautyFrame, whiteLevel);
 
-	float coef = 0.3;
+	blendImageWithMask(mBeautyFrame, mRawFrame, mSkinMask);
+
+	float coef = 0.5;
 	frameEnhance(mBeautyFrame, mRawFrame, coef);
 
 	endTime = clock();

@@ -62,3 +62,37 @@ void frame_enhance_with_mask(cv::Mat & outImg, cv::Mat & inImg, cv::Mat & maskIm
 	}
 }
 
+void blendImageWithMask(cv::Mat & outImg, cv::Mat & inImg, cv::Mat & maskImg)
+{
+	int rows = inImg.rows;
+	int cols = inImg.cols;
+	int channels = inImg.channels();
+
+	if (rows == 0 || cols == 0 || channels != 3) {
+		return;
+	}
+
+	if (rows != outImg.rows ||
+		cols != outImg.cols ||
+		channels != outImg.channels()) {
+		return;
+	}
+
+	uint8_t alpha = 0;
+	for (int i = 0; i < rows; i++) {
+		uint8_t *inData = inImg.ptr<uint8_t>(i);
+		uint8_t *outData = outImg.ptr<uint8_t>(i);
+		uint8_t *maskData = maskImg.ptr<uint8_t>(i);
+		for (int j = 0; j < cols; j++) {
+			alpha = maskData[j];
+
+			outData[0] = (inData[0] * (255 - alpha) + outData[0] * alpha) >> 8;
+			outData[1] = (inData[1] * (255 - alpha) + outData[1] * alpha) >> 8;
+			outData[2] = (inData[2] * (255 - alpha) + outData[2] * alpha) >> 8;
+
+			inData += 3;
+			outData += 3;
+		}
+	}
+}
+

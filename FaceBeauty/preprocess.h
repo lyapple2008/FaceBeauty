@@ -11,4 +11,6 @@ void whiteBalance(cv::Mat& in, cv::Mat& out);
 // outImg = inImg;
 void frame_enhance_with_mask(cv::Mat& outImg, cv::Mat& inImg, cv::Mat& maskImg, float coef);
 
+void blendImageWithMask(cv::Mat& outImg, cv::Mat& inImg, cv::Mat& maskImg);
+
 #endif

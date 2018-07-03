@@ -18,5 +18,14 @@
     <ClCompile Include="method_01.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\FaceBeauty\skinWhiten.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\FaceBeauty\preprocess.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\FaceBeauty\skinSegment.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

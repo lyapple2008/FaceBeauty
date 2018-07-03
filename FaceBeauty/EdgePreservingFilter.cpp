@@ -173,7 +173,7 @@ static void computePowIntegralFrame(cv::Mat& inFrame, cv::Mat& integralFrame)
 
 	uint8_t* inData = inFrame.ptr<uint8_t>(0);
 	double* sumData = integralFrame.ptr<double>(0);
-	int sumB = 0, sumG = 0, sumR = 0;
+	double sumB = 0, sumG = 0, sumR = 0;
 	for (int c = 0; c < cols; c++) {
 		sumB += inData[0] * inData[0];
 		sumG += inData[1] * inData[1];
@@ -224,10 +224,6 @@ void filter_by_localMeanSquareFilter(cv::Mat& inFrame, cv::Mat& outFrame, float 
 
 	cv::Mat powIntegralFrame;
 	computePowIntegralFrame(inFrame, powIntegralFrame);
-
-	cv::Mat sumFrame, sqSumFrame;
-	cv::integral(inFrame, sumFrame, sqSumFrame);
-
 
 	outFrame = cv::Mat::zeros(inFrame.size(), inFrame.type());
 	float invWinSize = 1.0 / ((2*winHalfH + 1) * (2*winHalfW + 1));
@@ -296,5 +292,101 @@ void filter_by_localMeanSquareFilter(cv::Mat& inFrame, cv::Mat& outFrame, float 
 		inData += (cols - winHalfW) * channels;
 		outData += (cols - winHalfW) * channels;
 		memcpy(outData, inData, winHalfW * channels);
+	}
+}
+
+void filter_by_localMeanSquareFilter_grayscale(cv::Mat& inFrame, cv::Mat& outFrame, int level)
+{
+	int rows = inFrame.rows;
+	int cols = inFrame.cols;
+	int channels = inFrame.channels();
+	int winHalfW = MAX2(rows, cols) * 0.02;
+	int winHalfH = winHalfW;
+
+	if (rows < (2 * winHalfH + 1) || cols < (2 * winHalfW + 1) || channels != 1) {
+		return;
+	}
+	
+	float delta = 10 + level * level * 5;
+
+	// compute sum and square sum frame
+	cv::Mat sumFrame = cv::Mat::zeros(inFrame.size(), CV_32SC1);
+	cv::Mat sqsumFrame = cv::Mat::zeros(inFrame.size(), CV_64FC1);
+	uint8_t* inData = inFrame.ptr<uint8_t>(0);
+	int32_t* sumData = sumFrame.ptr<int32_t>(0);
+	double* sqsumData = sqsumFrame.ptr<double>(0);
+	int sum = 0;
+	double sqsum = 0.0;
+	for (int c = 0; c < cols; c++) {
+		sum += *inData;
+		sqsum = (*inData) * (*inData);
+		*sumData = sum;
+		*sqsumData = sqsum;
+
+		sumData++;
+		sqsumData++;
+	}
+
+	for (int r = 1; r < rows; r++) {
+		uint8_t* curData = inFrame.ptr<uint8_t>(r);
+		int32_t* preSumData = sumFrame.ptr<int32_t>(r - 1);
+		int32_t* curSumData = sumFrame.ptr<int32_t>(r);
+		double* preSqsumData = sqsumFrame.ptr<double>(r - 1);
+		double* curSqsumData = sqsumFrame.ptr<double>(r);
+		sum = 0;
+		sqsum = 0.0;
+		for (int c = 0; c < cols; c++) {
+			sum += curData[c];
+			sqsum += curData[c] * curData[c];
+
+			curSumData[c] = sum + preSumData[c];
+			curSqsumData[c] = sqsum + preSqsumData[c];
+		}
+	}
+
+	outFrame = cv::Mat::zeros(inFrame.size(), inFrame.type());
+	float invWinSize = 1.0 / ((2 * winHalfH + 1) * (2 * winHalfW + 1));
+	for (int r = winHalfH; r < rows - winHalfH; r++) {
+		int32_t* topSumData = sumFrame.ptr<int32_t>(r - winHalfH);
+		int32_t* bottomSumData = sumFrame.ptr<int32_t>(r + winHalfH);
+		double* topSqsumData = sqsumFrame.ptr<double>(r - winHalfH);
+		double* bottomSqsumData = sqsumFrame.ptr<double>(r + winHalfH);
+		uint8_t* inData = inFrame.ptr<uint8_t>(r);
+		uint8_t* outData = outFrame.ptr<uint8_t>(r);
+		float mean = 0.0, var = 0.0, k = 0.0;
+
+		for (int c = winHalfW; c < cols - winHalfW; c++) {
+			mean = bottomSumData[c + winHalfW] - bottomSumData[c - winHalfW]
+			       - topSumData[c + winHalfW] + topSumData[c - winHalfW];
+			var = bottomSqsumData[c + winHalfW] - bottomSqsumData[c - winHalfH]
+				- topSumData[c + winHalfW] + topSumData[c - winHalfW];
+
+			var = invWinSize * (var - invWinSize * mean * mean);
+			mean = invWinSize * mean;
+			k = var / (var + delta);
+
+			outData[c] = CLIP3(inData[c] * k + (1 - k) * mean, 0, 255);
+		}
+	}
+
+	for (int r = 0; r < winHalfH; r++) {
+		uint8_t* inData = inFrame.ptr<uint8_t>(r);
+		uint8_t* outData = outFrame.ptr<uint8_t>(r);
+		memcpy(outData, inData, cols);
+	}
+
+	for (int r = rows - winHalfH; r < rows; r++) {
+		uint8_t* inData = inFrame.ptr<uint8_t>(r);
+		uint8_t* outData = outFrame.ptr<uint8_t>(r);
+		memcpy(outData, inData, cols);
+	}
+
+	for (int r = winHalfH; r < rows - winHalfH; r++) {
+		uint8_t* inData = inFrame.ptr<uint8_t>(r);
+		uint8_t* outData = outFrame.ptr<uint8_t>(r);
+		memcpy(outData, inData, winHalfW);
+		inData += (cols - winHalfW);
+		outData += (cols - winHalfW);
+		memcpy(outData, inData, winHalfW);
 	}
 }
